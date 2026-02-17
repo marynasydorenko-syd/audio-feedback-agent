@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Audio Feedback Agent</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+    button { padding: 10px; margin-top: 10px; }
+    audio, video { width: 100%; margin-top: 10px; }
+    pre { background:#f4f4f4; padding:10px; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+
+<h2>🎧 Audio & Video Feedback Agent</h2>
+
+<input type="file" id="file" accept="audio/*,video/*">
+<br>
+<button onclick="upload()">Upload & Get Feedback</button>
+
+<div id="preview"></div>
+<pre id="result"></pre>
+
+<script>
+async function upload() {
+  const file = document.getElementById("file").files[0];
+  if (!file) return alert("Please choose a file");
+
+  const preview = document.getElementById("preview");
+  preview.innerHTML = file.type.startsWith("video") 
+    ? `<video controls src="${URL.createObjectURL(file)}"></video>`
+    : `<audio controls src="${URL.createObjectURL(file)}"></audio>`;
+
+  const form = new FormData();
+  form.append("file", file);
+
+  document.getElementById("result").textContent = "Processing...";
+
+  const res = await fetch("YOUR_BACKEND_URL/upload", {
+    method: "POST",
+    body: form
+  });
+
+  const data = await res.json();
+
+  document.getElementById("result").textContent =
+    "TRANSCRIPTION:\n" + data.transcription +
+    "\n\nFEEDBACK:\n" + data.feedback;
+}
+</script>
+
+</body>
+</html>
